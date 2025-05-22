@@ -14,7 +14,18 @@ import {
 } from "@/components/ui/sidebar";
 import { useLocation } from "react-router-dom";
 import Dashboard from "./Dashboard";
+import Iframe from "./iframe";
 
+function renderContent(pathname: string) {
+  switch (pathname) {
+    case "dashboard":
+      return <Dashboard />;
+    case "xpenza-ai":
+      return <Iframe />;
+    default:
+      return <XpenzaUpload />;
+  }
+}
 export default function Home() {
   const location = useLocation()
   const pathname = location.pathname.split('/')[1]
@@ -35,10 +46,7 @@ export default function Home() {
           </Breadcrumb>
         </header>
         <div className="">
-          {
-            pathname === 'dashboard' ? <Dashboard /> : <XpenzaUpload />
-          }
-          
+          {renderContent(pathname)}
         </div>
       </SidebarInset>
     </SidebarProvider>

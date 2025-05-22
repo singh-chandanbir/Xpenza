@@ -18,7 +18,7 @@ export const userController = {
   },
   async login(req: Request, res: Response, next: NextFunction){
     const {emailOrUsername, password} = req.body;
-  
+
     try{
       const user = await prisma.user.findFirst({
         where: {
@@ -28,13 +28,13 @@ export const userController = {
           ]
         }
       });
-      
+
       if(!user){
         return next(createHttpError(400, 'Invalid email or password'))
       }
       const isPasswordMatching = await bcrypt.compare(password, user.password as string)
       if(!isPasswordMatching) {
-        
+
         return next(createHttpError(400, 'Invalid email or password'))
       }
       const local_access_token = jwtHelper.generateToken({
@@ -129,17 +129,17 @@ export const userController = {
 
       // 3. Check if the user exists in the database
       let user = await prisma.user.findUnique({
-        where: { providerId: githubUser.id.toString() }, 
+        where: { providerId: githubUser.id.toString() },
       });
 
-     
+
       const altEmail = `${githubUser.login.toLowerCase()}@gmail.com`;
 
       // 4. If the user doesn't exist, create a new record
       if (!user) {
         user = await prisma.user.create({
           data: {
-            email: githubUser?.email || altEmail, 
+            email: githubUser?.email || altEmail,
             username: githubUser.name || githubUser.login,
             avatar: githubUser.avatar_url,
             authProvider: "GITHUB",
@@ -188,56 +188,56 @@ export const userController = {
   async  updateUser(req: Request, res: Response, next: NextFunction) {
     const _req = req as AuthRequest;
     try {
-      const userId = _req.userId 
+      const userId = _req.userId
       if (!userId) {
-        return next(createHttpError(401, "Unauthorized")) 
+        return next(createHttpError(401, "Unauthorized"))
       }
-  
+
       const { username, email, password } = req.body
       console.log(req.body)
       console.log(req.file)
       const updateData: Record<string, any> = {}
-  
+
       if (username) {
         const existingUser = await prisma.user.findFirst({ where: { username } })
         if (existingUser && existingUser.providerId !== String(userId)) {
-          return next(createHttpError(400, "Username already taken")) 
-         
+          return next(createHttpError(400, "Username already taken"))
+
         }
         updateData.username = username
       }
-  
+
       if (email) {
         const existingEmail = await prisma.user.findUnique({ where: { email } })
         if (existingEmail && existingEmail.providerId !== String(userId)) {
-        
-          return next(createHttpError(400, "Email already in use")) 
+
+          return next(createHttpError(400, "Email already in use"))
 
         }
         updateData.email = email
       }
-  
+
       if (password) {
         const hashedPassword = await bcrypt.hash(password, 10)
         updateData.password = hashedPassword
       }
-  
+
       if (req.file && req.file?.buffer) {
         updateData.avatar = await uploadOnCloudinary(req.file.buffer)
       }
       console.log('🚒', updateData)
       console.log('ID:', userId)
-  
+
       if (Object.keys(updateData).length === 0) {
-    
-        return next(createHttpError(400, "No valid fields provided for update")) 
+
+        return next(createHttpError(400, "No valid fields provided for update"))
       }
-  
+
       const updatedUser = await prisma.user.update({
         where: { providerId: String(userId) },
         data: updateData,
       })
-  
+
       res.json({ message: "User updated successfully", user: updatedUser })
     } catch (error) {
       next(error)
@@ -248,6 +248,25 @@ export const userController = {
 
     const result = await generateText(prompt);
     const jsonData = JSON.parse(JSON.stringify(result))
-    res.json({message: jsonData})
+    res.json({ message: jsonData })
+  },
+  async userContext(req: Request, res: Response, next: NextFunction) {
+    const { userId } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(userId)
+      },
+      include: {
+        bills: true,
+        budgets: true,
+        financialGoals: true,
+      }
+    })
+    if (!user) {
+      return next(createHttpError(404, "User not found"))
+    }
+
+    res.json({ message: user })
   }
 }

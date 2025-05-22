@@ -21,13 +21,21 @@ export const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
-{
-  path: '/dashboard',
-  element: (
-    <ProtectedRoute>
-      <Home />
-    </ProtectedRoute>
-  )
-}
-  
+  {
+    path: '/dashboard',
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: '/xpenza-ai',
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    )
+  }
+
 ]);

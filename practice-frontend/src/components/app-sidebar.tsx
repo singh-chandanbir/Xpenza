@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HomeIcon, LayoutDashboardIcon, Plus } from "lucide-react";
+import { BotMessageSquare, HomeIcon, LayoutDashboardIcon, Plus,  } from "lucide-react";
 
 
 import { NavUser } from "@/components/nav-user";
@@ -30,19 +30,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <Link to="/">
-        <SidebarMenuButton >
-          <HomeIcon />
-          <span>Home</span>
-        </SidebarMenuButton  >
+          <SidebarMenuButton >
+            <HomeIcon />
+            <span>Home</span>
+          </SidebarMenuButton  >
         </Link>
-      
+
         <SidebarSeparator className="mx-0" />
         <Link to="/dashboard">
-        <SidebarMenuButton >
-          <LayoutDashboardIcon />
-          <span>Dashboard</span>
-        </SidebarMenuButton>
+          <SidebarMenuButton >
+            <LayoutDashboardIcon />
+            <span>Dashboard</span>
+          </SidebarMenuButton>
         </Link>
+
+        <SidebarSeparator className="mx-0" />
+        <Link to="/xpenza-ai">
+          <SidebarMenuButton >
+            <BotMessageSquare /> 
+            <span>Xpenza AI</span>
+          </SidebarMenuButton>
+        </Link>
+
 
         <SidebarSeparator className="mx-0" />
       </SidebarContent>

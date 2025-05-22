@@ -13,5 +13,6 @@ userRouter.post('/auth/google', userController.googleAuth)
 userRouter.post('/auth/github', userController.githubAuth)
 userRouter.get('/me', authMiddleware,userController.me)
 userRouter.post('/ask', userController.askMeAnything)
+userRouter.post('/user-context', userController.userContext)
 
 export default userRouter
