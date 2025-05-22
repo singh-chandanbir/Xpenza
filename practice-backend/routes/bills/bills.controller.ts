@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { generateText } from "../../shared/textRecognition";
 import { processAndFetchResult } from "../../shared/tabScanner";
 import path from "node:path";

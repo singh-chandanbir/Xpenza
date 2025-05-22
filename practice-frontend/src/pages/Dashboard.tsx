@@ -89,32 +89,32 @@ const fetchBillsData = async (filters: {
 };
 
 const fetchBudgetData = async () => {
-  const response = await axiosInstance.get("/budgets");
+  const response = await axiosInstance.get("/bills/budgets");
   return response.data.data;
 };
 
 const createBudgetData = async (budget: { totalBudget: number; spent: number }) => {
-  const response = await axiosInstance.post("/budgets", budget);
+  const response = await axiosInstance.post("/bills/budgets", budget);
   return response.data.data;
 };
 
 const updateBudgetData = async (budget: { totalBudget: number; spent: number }) => {
-  const response = await axiosInstance.put("/budgets", budget);
+  const response = await axiosInstance.put("/bills/budgets", budget);
   return response.data.data;
 };
 
 const fetchGoalsData = async () => {
-  const response = await axiosInstance.get("/financial-goals");
+  const response = await axiosInstance.get("/bills/financial-goals");
   return response.data.data;
 };
 
 const createGoalData = async (goal: { name: string; target: number; saved: number }) => {
-  const response = await axiosInstance.post("/financial-goals", goal);
+  const response = await axiosInstance.post("/bills/financial-goals", goal);
   return response.data.data;
 };
 
 const updateGoalData = async (goal: { id: number; target: number; saved: number }) => {
-  const response = await axiosInstance.put(`/financial-goals/${goal.id}`, goal);
+  const response = await axiosInstance.put(`/bills/financial-goals/${goal.id}`, goal);
   return response.data.data;
 };
 
