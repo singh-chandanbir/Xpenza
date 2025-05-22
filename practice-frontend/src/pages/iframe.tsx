@@ -1,3 +1,4 @@
+import { profile } from "@/http";
 import { useEffect, useRef } from "react";
 
 function Iframe() {
@@ -5,11 +6,9 @@ function Iframe() {
 
 
     useEffect(() => {
-        const user = {
-            id: "1",
-        };
-
-        const handleMessage = (event: MessageEvent) => {
+     
+        const handleMessage = async (event: MessageEvent) => {
+            const {user} = await profile();
             if (event.data.type === "READY") {
                 // Iframe is ready — send user data
                 iframeRef.current?.contentWindow?.postMessage(
