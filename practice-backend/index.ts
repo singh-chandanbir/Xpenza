@@ -7,9 +7,15 @@ import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import billsRouter  from "./routes/bills/bills.routes";
 const app = express();
 
+const FRONTEND_URI = process.env.FRONTEND_URI 
+
+if (!FRONTEND_URI) {
+  throw new Error("FRONTEND_URI is not defined in environment variables");
+}
+
 app.use(
   cors({
-    origin: `${process.env.FRONTEND_URI}`,
+    origin: `${FRONTEND_URI}`,
     credentials: true,
   })
 );
