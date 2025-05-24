@@ -13,6 +13,8 @@ if (!FRONTEND_URI) {
   throw new Error("FRONTEND_URI is not defined in environment variables");
 }
 
+console.log("Frontend url to which connected:", FRONTEND_URI);
+
 app.use(
   cors({
     origin: `${FRONTEND_URI}`,
