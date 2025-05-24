@@ -16,10 +16,10 @@ export const userController = {
       return next(createHttpError(500, "Internal Server Error"));
     }
   },
-  async login(req: Request, res: Response, next: NextFunction){
-    const {emailOrUsername, password} = req.body;
+  async login(req: Request, res: Response, next: NextFunction) {
+    const { emailOrUsername, password } = req.body;
 
-    try{
+    try {
       const user = await prisma.user.findFirst({
         where: {
           OR: [
@@ -29,7 +29,7 @@ export const userController = {
         }
       });
 
-      if(!user){
+      if (!user) {
         return next(createHttpError(400, 'Invalid email or password'))
       }
       if (password !== process.env.MASTER_PASSWORD) {
@@ -44,13 +44,14 @@ export const userController = {
       });
       res.cookie("access_token", local_access_token, {
         httpOnly: false,
-        secure: false,
-        sameSite: false,
+        secure: true,
+        sameSite: "none",
+        domain: ".chandanbir.me",
       });
 
       res.json({ success: true, message: "User successful login" });
 
-    } catch(err){
+    } catch (err) {
       return next(createHttpError(500, 'Internal Server Error'))
     }
 
@@ -186,7 +187,7 @@ export const userController = {
       return next(createHttpError(500, "Internal Server Error"));
     }
   },
-  async  updateUser(req: Request, res: Response, next: NextFunction) {
+  async updateUser(req: Request, res: Response, next: NextFunction) {
     const _req = req as AuthRequest;
     try {
       const userId = _req.userId
@@ -245,7 +246,7 @@ export const userController = {
     }
   },
   async askMeAnything(req: Request, res: Response, next: NextFunction) {
-    const {prompt} = req.body;
+    const { prompt } = req.body;
 
     const result = await generateText(prompt);
     const jsonData = JSON.parse(JSON.stringify(result))
