@@ -21,6 +21,7 @@ import {
   ArcElement,
   Tooltip,
   Legend,
+  ChartOptions,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
@@ -93,12 +94,18 @@ const fetchBudgetData = async () => {
   return response.data.data;
 };
 
-const createBudgetData = async (budget: { totalBudget: number; spent: number }) => {
+const createBudgetData = async (budget: {
+  totalBudget: number;
+  spent: number;
+}) => {
   const response = await axiosInstance.post("/bills/budgets", budget);
   return response.data.data;
 };
 
-const updateBudgetData = async (budget: { totalBudget: number; spent: number }) => {
+const updateBudgetData = async (budget: {
+  totalBudget: number;
+  spent: number;
+}) => {
   const response = await axiosInstance.put("/bills/budgets", budget);
   return response.data.data;
 };
@@ -108,13 +115,24 @@ const fetchGoalsData = async () => {
   return response.data.data;
 };
 
-const createGoalData = async (goal: { name: string; target: number; saved: number }) => {
+const createGoalData = async (goal: {
+  name: string;
+  target: number;
+  saved: number;
+}) => {
   const response = await axiosInstance.post("/bills/financial-goals", goal);
   return response.data.data;
 };
 
-const updateGoalData = async (goal: { id: number; target: number; saved: number }) => {
-  const response = await axiosInstance.put(`/bills/financial-goals/${goal.id}`, goal);
+const updateGoalData = async (goal: {
+  id: number;
+  target: number;
+  saved: number;
+}) => {
+  const response = await axiosInstance.put(
+    `/bills/financial-goals/${goal.id}`,
+    goal
+  );
   return response.data.data;
 };
 
@@ -183,12 +201,20 @@ const Dashboard = () => {
     enabled: false,
   });
 
-  const { data: budgetData, isLoading: budgetLoading, error: budgetError } = useQuery({
+  const {
+    data: budgetData,
+    isLoading: budgetLoading,
+    error: budgetError,
+  } = useQuery({
     queryKey: ["budget"],
     queryFn: fetchBudgetData,
   });
 
-  const { data: goalsData, isLoading: goalsLoading, error: goalsError } = useQuery({
+  const {
+    data: goalsData,
+    isLoading: goalsLoading,
+    error: goalsError,
+  } = useQuery({
     queryKey: ["financialGoals"],
     queryFn: fetchGoalsData,
   });
@@ -200,7 +226,9 @@ const Dashboard = () => {
       setBudgetErrorMsg("");
     },
     onError: (error: any) => {
-      setBudgetErrorMsg(error.response?.data?.message || "Failed to create budget");
+      setBudgetErrorMsg(
+        error.response?.data?.message || "Failed to create budget"
+      );
     },
   });
 
@@ -210,7 +238,9 @@ const Dashboard = () => {
       queryClient.invalidateQueries({ queryKey: ["budget"] });
     },
     onError: (error: any) => {
-      setBudgetErrorMsg(error.response?.data?.message || "Failed to update budget");
+      setBudgetErrorMsg(
+        error.response?.data?.message || "Failed to update budget"
+      );
     },
   });
 
@@ -324,7 +354,8 @@ const Dashboard = () => {
       monthIndex > 0 ? monthlyTotals[monthIndex - 1]?.value || 0 : 0;
     if (prevTotal === 0) return "N/A";
     const change: any = (
-      ((currentTotal - prevTotal) / prevTotal) * 100
+      ((currentTotal - prevTotal) / prevTotal) *
+      100
     ).toFixed(2);
     return change > 0
       ? `Increased by ${change}%`
@@ -357,7 +388,7 @@ const Dashboard = () => {
     ],
   };
 
-  const barChartOptions = {
+  const barChartOptions: ChartOptions<"bar"> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -387,7 +418,7 @@ const Dashboard = () => {
     },
     animation: {
       duration: 1000,
-      easing: "easeOutQuart",
+      easing: "easeOutQuart" as const, // Explicitly use a literal type
     },
   };
 
@@ -404,15 +435,15 @@ const Dashboard = () => {
     ],
   };
 
-  const pieChartOptions = {
+  const pieChartOptions: ChartOptions<"doughnut"> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "bottom" as const,
+        position: "bottom",
         labels: {
           color: "#1F2937",
-          font: { size: 12, weight: "500" },
+          font: { size: 12, weight: "bold" },
           padding: 20,
           boxWidth: 12,
         },
@@ -426,13 +457,13 @@ const Dashboard = () => {
       },
       datalabels: {
         color: "#1F2937",
-        font: { size: 12, weight: "600" },
+        // font: { size: 12, weight: "600" },
         formatter: (value: number, context: any) => {
           const label = context.chart.data.labels[context.dataIndex];
           return `${label}: $${value}`;
         },
-        anchor: "end" as const,
-        align: "end" as const,
+        anchor: "end",
+        align: "end",
         offset: 10,
         padding: 6,
         clip: false,
@@ -441,13 +472,15 @@ const Dashboard = () => {
     },
     animation: {
       duration: 1000,
-      easing: "easeOutQuart",
+      easing: "easeOutQuart" as const, // Explicitly use a literal type
     },
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-4xl font-extrabold mb-8 text-gray-900">Expense Tracker Dashboard</h1>
+      <h1 className="text-4xl font-extrabold mb-8 text-gray-900">
+        Expense Tracker Dashboard
+      </h1>
       <div className="mb-8 flex flex-wrap gap-4">
         <select
           value={selectedMonth}
@@ -492,7 +525,9 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Expenses</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Total Expenses
+            </CardTitle>
             <CreditCard className="w-6 h-6 text-red-500" />
           </CardHeader>
           <CardContent>
@@ -502,7 +537,8 @@ const Dashboard = () => {
             <Progress
               value={
                 budgetData?.totalBudget
-                  ? ((billsData?.totalSpend || 0) / budgetData.totalBudget) * 100
+                  ? ((billsData?.totalSpend || 0) / budgetData.totalBudget) *
+                    100
                   : 0
               }
               className="mt-2"
@@ -511,12 +547,16 @@ const Dashboard = () => {
         </Card>
         <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Bills Paid</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Bills Paid
+            </CardTitle>
             <ShoppingCart className="w-6 h-6 text-blue-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-gray-900">
-              {billsLoading ? "Loading..." : billsData?.pagination.totalCount || 0}
+              {billsLoading
+                ? "Loading..."
+                : billsData?.pagination.totalCount || 0}
             </p>
             <Progress
               value={
@@ -530,12 +570,16 @@ const Dashboard = () => {
         </Card>
         <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Spending Trend</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Spending Trend
+            </CardTitle>
             <TrendingUp className="w-6 h-6 text-green-500" />
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-gray-900">
-              {monthlyLoading || billsLoading ? "Loading..." : getSpendingTrend()}
+              {monthlyLoading || billsLoading
+                ? "Loading..."
+                : getSpendingTrend()}
             </p>
           </CardContent>
         </Card>
@@ -543,15 +587,21 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
           <h2 className="text-lg font-semibold mb-4 flex items-center text-gray-800">
-            <BarChartIcon className="w-6 h-6 text-gray-500 mr-2" /> Monthly Expense Overview
+            <BarChartIcon className="w-6 h-6 text-gray-500 mr-2" /> Monthly
+            Expense Overview
           </h2>
           <div className="h-[350px]">
-            <Bar ref={barChartRef} data={barChartData} options={barChartOptions} />
+            <Bar
+              ref={barChartRef}
+              data={barChartData}
+              options={barChartOptions}
+            />
           </div>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
           <h2 className="text-lg font-semibold mb-4 flex items-center text-gray-800">
-            <PieChartIcon className="w-6 h-6 text-gray-500 mr-2" /> Category-wise Expenses
+            <PieChartIcon className="w-6 h-6 text-gray-500 mr-2" />{" "}
+            Category-wise Expenses
           </h2>
           <div className="h-[350px]">
             <Doughnut data={pieChartData} options={pieChartOptions} />
@@ -561,7 +611,9 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Budget Overview</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Budget Overview
+            </CardTitle>
             <CreditCard className="w-6 h-6 text-yellow-500" />
           </CardHeader>
           <CardContent>
@@ -570,12 +622,16 @@ const Dashboard = () => {
             ) : budgetError ? (
               <div>
                 <p className="text-red-500 mb-4">No budget set yet</p>
-                {budgetErrorMsg && <p className="text-red-500 mb-4">{budgetErrorMsg}</p>}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Total Budget</label>
+                {budgetErrorMsg && (
+                  <p className="text-red-500 mb-4">{budgetErrorMsg}</p>
+                )}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Total Budget
+                  </label>
                   <Input
-                type="number"
-                name="totalBudget"
+                    type="number"
+                    name="totalBudget"
                     value={newBudget.totalBudget}
                     onChange={handleNewBudgetChange}
                     className="mt-1 p-2 border rounded-md w-full"
@@ -583,7 +639,9 @@ const Dashboard = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Spent</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Spent
+                  </label>
                   <Input
                     type="number"
                     name="spent"
@@ -602,36 +660,43 @@ const Dashboard = () => {
               </div>
             ) : (
               <>
-                {budgetErrorMsg && <p className="text-red-500 mb-4">{budgetErrorMsg}</p>}
+                {budgetErrorMsg && (
+                  <p className="text-red-500 mb-4">{budgetErrorMsg}</p>
+                )}
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Total Budget</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Total Budget
+                  </label>
                   <Input
                     type="number"
                     name="totalBudget"
                     value={budgetData?.totalBudget || 0}
-                onChange={handleBudgetChange}
-                className="mt-1 p-2 border rounded-md w-full"
+                    onChange={handleBudgetChange}
+                    className="mt-1 p-2 border rounded-md w-full"
                     min="0"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Spent</label>
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Spent
+                  </label>
                   <Input
-                type="number"
-                name="spent"
+                    type="number"
+                    name="spent"
                     value={budgetData?.spent || 0}
-                onChange={handleBudgetChange}
-                className="mt-1 p-2 border rounded-md w-full"
+                    onChange={handleBudgetChange}
+                    className="mt-1 p-2 border rounded-md w-full"
                     min="0"
-              />
-            </div>
+                  />
+                </div>
                 <p className="text-2xl font-bold text-gray-900">
                   ${budgetData?.remaining || 0} remaining
                 </p>
                 <Progress
                   value={
                     budgetData?.totalBudget
-                      ? ((budgetData.remaining || 0) / budgetData.totalBudget) * 100
+                      ? ((budgetData.remaining || 0) / budgetData.totalBudget) *
+                        100
                       : 0
                   }
                   className="mt-2"
@@ -642,7 +707,9 @@ const Dashboard = () => {
         </Card>
         <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Financial Goals</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Financial Goals
+            </CardTitle>
             <TrendingUp className="w-6 h-6 text-purple-500" />
           </CardHeader>
           <CardContent>
@@ -653,31 +720,39 @@ const Dashboard = () => {
             ) : (
               goalsData?.map((goal: any) => (
                 <div key={goal.id} className="mb-4">
-                  <p className="text-lg font-semibold text-gray-800">{goal.name}</p>
-                <div className="mb-2">
-                  <label className="block text-sm font-medium text-gray-700">Target</label>
+                  <p className="text-lg font-semibold text-gray-800">
+                    {goal.name}
+                  </p>
+                  <div className="mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Target
+                    </label>
                     <Input
-                    type="number"
-                    name="target"
-                    value={goal.target}
+                      type="number"
+                      name="target"
+                      value={goal.target}
                       onChange={(e) => handleGoalChange(goal.id, e)}
-                    className="mt-1 p-2 border rounded-md w-full"
+                      className="mt-1 p-2 border rounded-md w-full"
                       min="0"
-                  />
-                </div>
-                <div className="mb-2">
-                  <label className="block text-sm font-medium text-gray-700">Saved</label>
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Saved
+                    </label>
                     <Input
-                    type="number"
-                    name="saved"
-                    value={goal.saved}
+                      type="number"
+                      name="saved"
+                      value={goal.saved}
                       onChange={(e) => handleGoalChange(goal.id, e)}
-                    className="mt-1 p-2 border rounded-md w-full"
+                      className="mt-1 p-2 border rounded-md w-full"
                       min="0"
                     />
                   </div>
                   <Progress
-                    value={goal.target > 0 ? (goal.saved / goal.target) * 100 : 0}
+                    value={
+                      goal.target > 0 ? (goal.saved / goal.target) * 100 : 0
+                    }
                     className="mt-2"
                   />
                   <p className="text-sm text-gray-500">
@@ -687,10 +762,16 @@ const Dashboard = () => {
               ))
             )}
             <div className="mt-4">
-              <h3 className="text-lg font-semibold mb-2 text-gray-800">Add New Goal</h3>
-              {goalErrorMsg && <p className="text-red-500 mb-4">{goalErrorMsg}</p>}
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">
+                Add New Goal
+              </h3>
+              {goalErrorMsg && (
+                <p className="text-red-500 mb-4">{goalErrorMsg}</p>
+              )}
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Goal Name</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Goal Name
+                </label>
                 <Input
                   type="text"
                   name="name"
@@ -700,7 +781,9 @@ const Dashboard = () => {
                 />
               </div>
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Target</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Target
+                </label>
                 <Input
                   type="number"
                   name="target"
@@ -711,7 +794,9 @@ const Dashboard = () => {
                 />
               </div>
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Saved</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Saved
+                </label>
                 <Input
                   type="number"
                   name="saved"

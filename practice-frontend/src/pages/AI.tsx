@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 // Assume these shadcn UI components exist or are substitutes
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
