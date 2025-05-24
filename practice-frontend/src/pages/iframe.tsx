@@ -2,7 +2,8 @@ import { profile } from "@/http";
 import { useEffect, useRef } from "react";
 
 function Iframe() {
-    const iframeRef = useRef<HTMLIFrameElement>(null); // ✅ Type the ref
+    const iframeRef = useRef<HTMLIFrameElement>(null); 
+    const iframeUrl = import.meta.env.VITE_XPENZA_AI_IFRAME_URL;
 
 
     useEffect(() => {
@@ -16,7 +17,7 @@ function Iframe() {
                         type: "USER_INFO",
                         payload: user,
                     },
-                    "http://localhost:3000" // Match the iframe origin
+                    iframeUrl
                 );
             }
         };
@@ -29,7 +30,7 @@ function Iframe() {
         <>
             <iframe
                 ref={iframeRef}
-                src="http://localhost:3000"
+                src={iframeUrl}
                 style={{ width: "100%", height:"90vh" }}
                 title="Embedded Next.js App"
             />
