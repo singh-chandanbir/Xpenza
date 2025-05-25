@@ -2,9 +2,9 @@ import { useState } from "react"
 import {
 
   ChevronsUpDown,
-  
+
   LogOut,
-  
+
   User
 } from "lucide-react"
 import {
@@ -50,16 +50,16 @@ export function NavUser({
     onSuccess: (data) => {
       toast(data.success, {
         description: data.message,
-   
+
       })
       queryClient.invalidateQueries({queryKey: ['me']})
       setOpen(false)
-  
+
     },
     onError: (err) => {
       toast("Error occured", {
         description: err.message,
-        
+
       })
 
     },
@@ -69,8 +69,8 @@ export function NavUser({
   const handleUpdate = (data: any) => {
 
     updateUserMutation.mutate(data)
-    
-    
+
+
   }
 
   return (
@@ -104,21 +104,24 @@ export function NavUser({
                   </div>
                 </div>
               </DropdownMenuLabel>
-              
+
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={(e) => { 
+                <DropdownMenuItem onClick={(e) => {
                   e.stopPropagation()
-                  setOpen(true) 
+                  setOpen(true)
                 }}>
                   <User  />
                   Account Details
                 </DropdownMenuItem>
-             
+
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => {
-                Cookies.remove("access_token")
+                Cookies.remove("access_token", {
+                  domain: ".chandanbir.me",
+                  path: "/", // This must match the path used when setting the cookie
+                });
                 window.location.reload()
               }}>
                 <LogOut />
@@ -130,18 +133,18 @@ export function NavUser({
       </SidebarMenu>
 
       {/* Account Update Form */}
-      <AccountUpdateForm 
-        open={open} 
-        setOpen={setOpen} 
+      <AccountUpdateForm
+        open={open}
+        setOpen={setOpen}
         updateUserMutation={updateUserMutation}
-        defaultValues={{ 
-          username: user.username, 
+        defaultValues={{
+          username: user.username,
           email: user.email,
-          password: "", 
-          avatar: user.avatar 
-        }} 
+          password: "",
+          avatar: user.avatar
+        }}
         authProvider={user.authProvider}
-        onSubmit={handleUpdate} 
+        onSubmit={handleUpdate}
       />
     </>
   )
