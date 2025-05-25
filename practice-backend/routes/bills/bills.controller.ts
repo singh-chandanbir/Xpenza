@@ -45,6 +45,17 @@ export const billController = {
         res.status(400).json({ success: false, message: "No file uploaded" });
         return;
       }
+      const providerId = _req.userId;
+
+      const user = await prisma.user.findUnique({
+        where: { providerId: providerId },
+        select: { id: true },
+      });
+
+      if (!user) {
+        res.status(404).json({ success: false, message: "User not found" });
+        return;
+      }
 
       const filePath = path.resolve(req.file.path);
       console.log("Resolved File Path:", filePath);
@@ -64,7 +75,12 @@ export const billController = {
         return;
       }
       const ocrHash = generateOcrHash(ocrResult.result);
-      const existingBill = await prisma.bills.findFirst({ where: { ocrHash } });
+      const existingBill = await prisma.bills.findFirst({
+        where: {
+          ocrHash,
+          userId: user.id,
+        },
+      });
 
       if (existingBill) {
         res.status(409).json({
@@ -92,17 +108,6 @@ export const billController = {
       }
       const extractedJson = JSON.parse(extractedJsonMatch[1]);
       console.log(extractedJson, "USR ID:", _req.userId);
-      const providerId = _req.userId;
-
-      const user = await prisma.user.findUnique({
-        where: { providerId: providerId },
-        select: { id: true },
-      });
-
-      if (!user) {
-        res.status(404).json({ success: false, message: "User not found" });
-        return;
-      }
 
       const bill = await prisma.bills.create({
         data: {
@@ -217,7 +222,7 @@ export const billController = {
         .json({ success: false, message: (error as Error).message });
     }
   },
- async createBudget(req: Request, res: Response, next: NextFunction) {
+  async createBudget(req: Request, res: Response, next: NextFunction) {
     const { totalBudget, spent } = req.body;
     const _req = req as AuthRequest;
     try {
@@ -233,7 +238,9 @@ export const billController = {
         where: { userId: user.id },
       });
       if (existingBudget) {
-        res.status(409).json({ success: false, message: "Budget already exists" });
+        res
+          .status(409)
+          .json({ success: false, message: "Budget already exists" });
         return;
       }
       const budget = await prisma.budget.create({
@@ -321,7 +328,9 @@ export const billController = {
           id: updatedBudget.id,
           totalBudget: updatedBudget.totalBudget.toNumber(),
           spent: updatedBudget.spent.toNumber(),
-          remaining: updatedBudget.totalBudget.minus(updatedBudget.spent).toNumber(),
+          remaining: updatedBudget.totalBudget
+            .minus(updatedBudget.spent)
+            .toNumber(),
         },
       });
     } catch (err: any) {
