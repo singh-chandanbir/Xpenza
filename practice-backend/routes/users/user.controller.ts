@@ -89,8 +89,9 @@ export const userController = {
       });
       res.cookie("access_token", local_access_token, {
         httpOnly: false,
-        secure: false,
-        sameSite: false,
+        secure: true,
+        sameSite: "none",
+        domain: ".chandanbir.me",
       });
 
       res.json({ success: true, message: "User successful login" });
@@ -159,8 +160,9 @@ export const userController = {
       // 6. Set token as a cookie (Modify settings based on frontend needs)
       res.cookie("access_token", local_access_token, {
         httpOnly: false,
-        secure: false,
-        sameSite: false,
+        secure: true,
+        sameSite: "none",
+        domain: ".chandanbir.me",
       });
 
       res.json({ success: true, message: "User successfully logged in" });
